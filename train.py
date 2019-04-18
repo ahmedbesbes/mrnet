@@ -33,8 +33,8 @@ def run(args):
     mrnet = MRNet()
     criterion = nn.BCELoss()
     optimizer = optim.Adam(mrnet.parameters())
-    
-    trainset = MRDataset(args.task, args.plane, train=bool(args.augment))
+
+    trainset = MRDataset(args.task, args.plane, transform=bool(args.augment))
     trainloader = torch.utils.data.DataLoader(
         trainset, batch_size=1, shuffle=True, num_workers=8)
 
