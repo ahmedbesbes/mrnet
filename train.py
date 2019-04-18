@@ -8,7 +8,7 @@ import torch.optim as optim
 
 from dataloader import MRDataset
 from model import MRNet
-
+ 
 
 def train(model, trainloader, epoch, criterion, optimizer, num_epochs):
     model.train()
