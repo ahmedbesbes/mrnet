@@ -14,9 +14,6 @@ MAX_PIXEL_VAL = 255
 MEAN = 58.09
 STDDEV = 49.73
 
-RandomTranslate
-
-
 class Dataset(data.Dataset):
     def __init__(self, task, plane, train=True, transform=True):
         super().__init__()
