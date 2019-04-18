@@ -31,6 +31,7 @@ class MRDataset(data.Dataset):
             self.labels = pd.read_csv(
                 '../data/valid-{0}.csv'.format(task), header=None)[1]
         self.data_transform = transforms.Compose([
+            transforms.ToPILImage(),
             transforms.RandomRotation(25),
             transforms.RandomAffine(0, translate=(0.11, 0.11)),
             transforms.RandomHorizontalFlip()
