@@ -59,7 +59,7 @@ class MRDataset(data.Dataset):
         array = np.stack((array,) * 3, axis=1)
 
         array = torch.FloatTensor(array)
-        label = torch.FloatTensor(label)
+        label = torch.FloatTensor([label])
 
         if self.transform:
             array = self.data_transform(array)
