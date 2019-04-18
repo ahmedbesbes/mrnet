@@ -33,8 +33,8 @@ def run(args):
     mrnet = MRNet()
     criterion = nn.BCELoss()
     optimizer = optim.Adam(mrnet.parameters())
-
-    trainset = MRDataset(args.task, args.plane)
+    
+    trainset = MRDataset(args.task, args.plane, train=bool(args.augment))
     trainloader = torch.utils.data.DataLoader(
         trainset, batch_size=1, shuffle=True, num_workers=8)
 
@@ -49,6 +49,7 @@ def parse_arguments():
                         choices=['abnormal', 'acl', 'meniscus'])
     parser.add_argument('-p', '--plane', type=str, required=True,
                         choices=['saggital', 'coronal', 'axial'])
+    parser.add_argument('--augment', type=int, choices=[0, 1], default=1)
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--lr', type=float, default=0.0001)
     args = parser.parse_args()
