@@ -24,12 +24,12 @@ class MRDataset(data.Dataset):
             self.path = '../data/train/{0}/'.format(plane)
             self.path_files = [self.path + p for p in os.listdir(self.path)]
             self.labels = pd.read_csv(
-                '../data/train/train-{0}.csv'.format(task), header=None)[1]
+                '../data/train-{0}.csv'.format(task), header=None)[1]
         else:
             self.path = '../data/valid/{0}/'.format(plane)
             self.path_files = [self.path + p for p in os.listdir(self.path)]
             self.labels = pd.read_csv(
-                '../data/train/valid-{0}.csv'.format(task), header=None)[1]
+                '../data/valid-{0}.csv'.format(task), header=None)[1]
         self.data_transform = transforms.Compose([
             transforms.RandomRotation(25),
             transforms.RandomAffine(0, translate=(0.11, 0.11)),
