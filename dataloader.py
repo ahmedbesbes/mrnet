@@ -36,6 +36,8 @@ class MRDataset(data.Dataset):
             transforms.RandomHorizontalFlip()
         ])
         
+    def __len__(self):
+        return len(self.path_files)
 
     def __getitem__(self, index):
         array = np.load(self.path_files[index])
