@@ -11,6 +11,7 @@ class MRNet(nn.Module):
         self.classifer = nn.Linear(256, 1)
 
     def forward(self, x):
+        x = torch.squeeze(x, dim=0) 
         features = self.pretrained_model.features(x)
         pooled_features = self.pooling_layer(features)
         pooled_features = pooled_features.view(pooled_features.size(0), -1)
