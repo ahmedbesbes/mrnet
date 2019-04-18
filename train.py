@@ -32,7 +32,7 @@ def train(model, trainloader, epoch, criterion, optimizer, num_epochs):
 def run(args):
     mrnet = MRNet()
     criterion = nn.BCELoss()
-    optimizer = optim.Adam(mrnet.parameters)
+    optimizer = optim.Adam(mrnet.parameters())
 
     trainset = MRDataset(args.task, args.plane)
     trainloader = torch.utils.data.DataLoader(
