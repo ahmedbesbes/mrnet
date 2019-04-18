@@ -14,7 +14,7 @@ MAX_PIXEL_VAL = 255
 MEAN = 58.09
 STDDEV = 49.73
 
-class Dataset(data.Dataset):
+class MRDataset(data.Dataset):
     def __init__(self, task, plane, train=True, transform=True):
         super().__init__()
         self.task = task
