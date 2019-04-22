@@ -14,29 +14,31 @@ MAX_PIXEL_VAL = 255
 MEAN = 58.09
 STDDEV = 49.73
 
+
 class MRDataset(data.Dataset):
-    def __init__(self, task, plane, train=True, transform=True):
+    def __init__(self, data_path, task, plane, train=True, transform=True):
         super().__init__()
         self.task = task
         self.plane = plane
         self.transform = transform
+        self.data_path = data_path
         if train:
-            self.path = '../data/train/{0}/'.format(plane)
+            self.path = self.data_path + 'train/{0}/'.format(plane)
             self.path_files = [self.path + p for p in os.listdir(self.path)]
-            self.labels = pd.read_csv(
-                '../data/train-{0}.csv'.format(task), header=None)[1]
+            self.labels = pd.read_csv(self.data_path +
+                                      'train-{0}.csv'.format(task), header=None)[1]
         else:
-            self.path = '../data/valid/{0}/'.format(plane)
+            self.path = self.data_path + 'valid/{0}/'.format(plane)
             self.path_files = [self.path + p for p in os.listdir(self.path)]
             self.labels = pd.read_csv(
-                '../data/valid-{0}.csv'.format(task), header=None)[1]
+                self.data_path + 'valid-{0}.csv'.format(task), header=None)[1]
         self.data_transform = transforms.Compose([
             transforms.ToPILImage(),
             transforms.RandomRotation(25),
             transforms.RandomAffine(0, translate=(0.11, 0.11)),
             transforms.RandomHorizontalFlip()
         ])
-        
+
     def __len__(self):
         return len(self.path_files)
 

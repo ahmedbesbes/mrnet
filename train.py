@@ -5,17 +5,20 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torch.autograd import Variable
 
 from dataloader import MRDataset
 from model import MRNet
  
 
 def train(model, trainloader, epoch, criterion, optimizer, num_epochs):
-    model.train()
+    _ = model.train()
     train_losses = []
-    for i, (image, label) in enumerate(trainloader):
-        prediction = model(image)
-        loss = criterion(label, prediction)
+    for i, (image, label) in enumerate(trainloader): 
+        optimizer.zero_grad()
+        prediction = model.forward(image)
+        prediction = torch.tensor(prediction)
+        loss = criterion(label[0], prediction[0])
         loss.backward()
         optimizer.step()
         loss = loss.item()
@@ -34,7 +37,7 @@ def run(args):
     criterion = nn.BCELoss()
     optimizer = optim.Adam(mrnet.parameters())
 
-    trainset = MRDataset(args.task, args.plane, transform=bool(args.augment))
+    trainset = MRDataset('./data/', args.task, args.plane, transform=bool(args.augment))
     trainloader = torch.utils.data.DataLoader(
         trainset, batch_size=1, shuffle=True, num_workers=8)
 

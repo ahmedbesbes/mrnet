@@ -1,4 +1,6 @@
 data/
 models/
 logs/
+notebooks/
 .vscode/
+__pycache__/
