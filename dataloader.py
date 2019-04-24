@@ -32,6 +32,8 @@ class MRDataset(data.Dataset):
             self.path_files = [self.path + p for p in os.listdir(self.path)]
             self.labels = pd.read_csv(
                 self.data_path + 'valid-{0}.csv'.format(task), header=None)[1]
+
+        self.pos_weight = np.mean(self.labels)
         self.data_transform = transforms.Compose([
             transforms.ToPILImage(),
             transforms.RandomRotation(25),
@@ -66,4 +68,11 @@ class MRDataset(data.Dataset):
         if self.transform:
             array = self.data_transform(array)
 
-        return array, label
+        if label.item() == 1:
+            weight = np.array([1 - self.pos_weight])
+            weight = torch.FloatTensor(weight)
+        else:
+            weight = np.array([self.pos_weight])
+            weight = torch.FloatTensor(weight)
+
+        return array, label, weight
