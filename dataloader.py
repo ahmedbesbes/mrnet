@@ -83,7 +83,7 @@ class MRDataset(data.Dataset):
         array = self.transform(array)
 
         if label.item() == 1:
-            weight = np.array([1 - self.pos_weight])
+            weight = np.array([1])
             weight = torch.FloatTensor(weight)
         else:
             weight = np.array([self.pos_weight])
