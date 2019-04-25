@@ -63,16 +63,16 @@ class MRDataset(data.Dataset):
         array = np.load(self.path_files[index])
         label = self.labels[index]
 
-        # crop middle
-        pad = int((array.shape[2] - INPUT_DIM)/2)
-        array = array[:, pad:-pad, pad:-pad]
+        # # crop middle
+        # pad = int((array.shape[2] - INPUT_DIM)/2)
+        # array = array[:, pad:-pad, pad:-pad]
 
-        # standardize
-        array = (array - np.min(array)) / \
-            (np.max(array) - np.min(array)) * MAX_PIXEL_VAL
+        # # standardize
+        # array = (array - np.min(array)) / \
+        #     (np.max(array) - np.min(array)) * MAX_PIXEL_VAL
 
-        # normalize
-        array = (array - MEAN) / STDDEV
+        # # normalize
+        # array = (array - MEAN) / STDDEV
 
         # convert to RGB
         array = np.stack((array,) * 3, axis=1)
