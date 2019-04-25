@@ -4,6 +4,7 @@ import numpy as np
 
 import torch
 import torch.nn.functional as F
+import torchvision.transforms.functional as TF
 import torch.utils.data as data
 from torchvision import transforms
 from torchsample.transforms import RandomRotate, RandomTranslate
@@ -16,11 +17,10 @@ STDDEV = 49.73
 
 
 class MRDataset(data.Dataset):
-    def __init__(self, data_path, task, plane, train=True, transform=True):
+    def __init__(self, data_path, task, plane, train=True):
         super().__init__()
         self.task = task
         self.plane = plane
-        self.transform = transform
         self.data_path = data_path
         if train:
             self.path = self.data_path + 'train/{0}/'.format(plane)
@@ -34,15 +34,29 @@ class MRDataset(data.Dataset):
                 self.data_path + 'valid-{0}.csv'.format(task), header=None)[1]
 
         self.pos_weight = np.mean(self.labels)
-        self.data_transform = transforms.Compose([
-            transforms.ToPILImage(),
-            transforms.RandomRotation(25),
-            transforms.RandomAffine(0, translate=(0.11, 0.11)),
-            transforms.RandomHorizontalFlip()
-        ])
+        self.to_pil = transforms.ToPILImage()
+        self.to_tensor = transforms.ToTensor()
 
     def __len__(self):
         return len(self.path_files)
+
+    def transform(self, mri):
+        s = mri.shape[0]
+        degrees = np.random.randint(-25, 25)
+        pixels = np.random.randint(-25, 25)
+        processed_slides = []
+        for i in range(s):
+            slide = mri[i]
+            slide = self.to_pil(slide)
+            slide = TF.affine(slide, degrees, [pixels, pixels], 1, 0)
+            if np.random.random() > 0.5:
+                slide = TF.hflip(slide)
+            slide = self.to_tensor(slide)
+            slide = slide.unsqueeze(0)
+            processed_slides.append(slide)
+        processed_slides = torch.cat(processed_slides, 0)
+        # processed_slides = processed_slides.unsqueeze(0)
+        return processed_slides
 
     def __getitem__(self, index):
         array = np.load(self.path_files[index])
@@ -65,8 +79,7 @@ class MRDataset(data.Dataset):
         array = torch.FloatTensor(array)
         label = torch.FloatTensor([label])
 
-        if self.transform:
-            array = self.data_transform(array)
+        array = self.transform(array)
 
         if label.item() == 1:
             weight = np.array([1 - self.pos_weight])
@@ -75,4 +88,4 @@ class MRDataset(data.Dataset):
             weight = np.array([self.pos_weight])
             weight = torch.FloatTensor(weight)
 
-        return array, label, weight 
+        return array, label, weight
