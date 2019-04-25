@@ -68,9 +68,9 @@ class MRDataset(data.Dataset):
         array = np.load(self.path_files[index])
         label = self.labels[index]
 
-        # # crop middle
-        # pad = int((array.shape[2] - INPUT_DIM)/2)
-        # array = array[:, pad:-pad, pad:-pad]
+        # crop middle
+        pad = int((array.shape[2] - INPUT_DIM)/2)
+        array = array[:, pad:-pad, pad:-pad]
 
         # standardize
         array = (array - np.min(array)) / \
