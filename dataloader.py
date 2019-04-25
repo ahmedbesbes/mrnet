@@ -44,12 +44,13 @@ class MRDataset(data.Dataset):
         s = mri.shape[0]
         degrees = np.random.randint(-25, 25)
         pixels = np.random.randint(-25, 25)
+        proba_flip = np.random.random()
         processed_slides = []
         for i in range(s):
             slide = mri[i]
             slide = self.to_pil(slide)
             slide = TF.affine(slide, degrees, [pixels, pixels], 1, 0)
-            if np.random.random() > 0.5:
+            if proba_flip > 0.5:
                 slide = TF.hflip(slide)
             slide = self.to_tensor(slide)
             slide = slide.unsqueeze(0)
