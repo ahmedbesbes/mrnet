@@ -17,7 +17,7 @@ STDDEV = 49.73
 
 
 class MRDataset(data.Dataset):
-    def __init__(self, data_path, task, plane, train=True):
+    def __init__(self, data_path, task, plane, train=True, weights=None):
         super().__init__()
         self.task = task
         self.plane = plane
@@ -32,10 +32,15 @@ class MRDataset(data.Dataset):
             self.path_files = [self.path + p for p in os.listdir(self.path)]
             self.labels = pd.read_csv(
                 self.data_path + 'valid-{0}.csv'.format(task), header=None)[1]
-
-        self.pos_weight = np.mean(self.labels)
+        
         self.to_pil = transforms.ToPILImage()
         self.to_tensor = transforms.ToTensor()
+
+        if weights is None:
+            pos_weight = np.mean(self.labels.values)
+            self.weights = [pos_weight, 1]
+        else:
+            self.weights = weights
 
     def __len__(self):
         return len(self.path_files)
@@ -83,10 +88,10 @@ class MRDataset(data.Dataset):
         array = self.transform(array)
 
         if label.item() == 1:
-            weight = np.array([1])
+            weight = np.array([self.weights[1]])
             weight = torch.FloatTensor(weight)
         else:
-            weight = np.array([self.pos_weight])
+            weight = np.array([self.weights[0]])
             weight = torch.FloatTensor(weight)
 
         return array, label, weight
