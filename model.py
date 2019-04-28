@@ -6,7 +6,7 @@ from torchvision import models
 class MRNet(nn.Module):
     def __init__(self):
         super().__init__()
-        self.pretrained_model = models.AlexNet()
+        self.pretrained_model = models.alexnet(pretained=True)
         self.pooling_layer = nn.AdaptiveAvgPool2d(1)
         self.classifer = nn.Linear(256, 1)
 
