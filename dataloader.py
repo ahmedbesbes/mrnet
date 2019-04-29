@@ -14,7 +14,7 @@ INPUT_DIM = 224
 MAX_PIXEL_VAL = 255
 MEAN = 58.09
 STDDEV = 49.73
-
+ 
 
 class MRDataset(data.Dataset):
     def __init__(self, data_path, task, plane, train=True, weights=None, augment=True):
