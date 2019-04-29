@@ -60,6 +60,8 @@ class MRDataset(data.Dataset):
         # normalize
         array = (array - MEAN) / STDDEV
 
+        array = array.astype(float)
+
         if self.transform:
             array = self.transform(array)
 
