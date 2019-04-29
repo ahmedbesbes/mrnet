@@ -38,8 +38,9 @@ class MRDataset(data.Dataset):
         self.to_tensor = transforms.ToTensor()
 
         if weights is None:
-            pos_weight = np.mean(self.labels.values)
-            self.weights = [pos_weight, 1]
+            pos = np.sum(self.labels)
+            neg = len(self.labels) - pos
+            self.weights = [1, neg / pos]
         else:
             self.weights = weights
 
