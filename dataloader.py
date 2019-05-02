@@ -17,21 +17,19 @@ STDDEV = 49.73
 
 
 class MRDataset(data.Dataset):
-    def __init__(self, data_path, task, plane, train=True, weights=None, transform=None):
+    def __init__(self, root_dir, task, plane, indexes, weights=None, transform=None):
         super().__init__()
         self.task = task
         self.plane = plane
-        self.data_path = data_path
-        if train:
-            self.path = self.data_path + 'train/{0}/'.format(plane)
-            self.path_files = [self.path + p for p in os.listdir(self.path)]
-            self.labels = pd.read_csv(self.data_path +
-                                      'train-{0}.csv'.format(task), header=None)[1]
-        else:
-            self.path = self.data_path + 'valid/{0}/'.format(plane)
-            self.path_files = [self.path + p for p in os.listdir(self.path)]
-            self.labels = pd.read_csv(
-                self.data_path + 'valid-{0}.csv'.format(task), header=None)[1]
+        self.root_dir = root_dir
+        self.folder_path = self.root_dir + 'train/{0}/'.format(plane)
+        
+        self.records = pd.read_csv(self.root_dir  + 'train-{0}.csv'.format(task), header=None, names=['id', 'label'])
+        self.records['id'] = self.records['id'].map(lambda i: '0' * (4 - len(str(i))) + str(i))
+        self.records = self.records.loc[indexes]
+
+        self.paths = [self.folder_path + filename + '.npy' for filename in self.records['id'].tolist()]
+        self.labels = self.records['label'].tolist()
 
         self.transform = transform
         if weights is None:
@@ -42,10 +40,10 @@ class MRDataset(data.Dataset):
             self.weights = weights
 
     def __len__(self):
-        return len(self.path_files)
+        return len(self.paths)
 
     def __getitem__(self, index):
-        array = np.load(self.path_files[index])
+        array = np.load(self.paths[index])
         label = self.labels[index]
         label = torch.FloatTensor([label])
 
