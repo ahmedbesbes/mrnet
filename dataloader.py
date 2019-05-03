@@ -17,14 +17,18 @@ STDDEV = 49.73
 
 
 class MRDataset(data.Dataset):
-    def __init__(self, root_dir, task, plane, indexes, weights=None, transform=None):
+    def __init__(self, root_dir, task, plane, indexes, weights=None, transform=None, train=True):
         super().__init__()
         self.task = task
         self.plane = plane
         self.root_dir = root_dir
-        self.folder_path = self.root_dir + 'train/{0}/'.format(plane)
+        if train:
+            self.folder_path = self.root_dir + 'train/{0}/'.format(plane)
+            self.records = pd.read_csv(self.root_dir  + 'train-{0}.csv'.format(task), header=None, names=['id', 'label'])
+        else:
+            self.folder_path = self.root_dir + 'valid/{0}/'.format(plane)
+            self.records = pd.read_csv(self.root_dir  + 'valid-{0}.csv'.format(task), header=None, names=['id', 'label'])
         
-        self.records = pd.read_csv(self.root_dir  + 'train-{0}.csv'.format(task), header=None, names=['id', 'label'])
         self.records['id'] = self.records['id'].map(lambda i: '0' * (4 - len(str(i))) + str(i))
         self.records = self.records.loc[indexes]
 
