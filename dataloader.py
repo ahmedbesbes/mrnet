@@ -72,13 +72,11 @@ class MRDataset(data.Dataset):
             array = np.stack((array,)*3, axis=1)
             array = torch.FloatTensor(array)
 
-        if self.train:
-            if label.item() == 1:
-                weight = np.array([self.weights[1]])
-                weight = torch.FloatTensor(weight)
-            else:
-                weight = np.array([self.weights[0]])
-                weight = torch.FloatTensor(weight)
-            return array, label, weight
+        if label.item() == 1:
+            weight = np.array([self.weights[1]])
+            weight = torch.FloatTensor(weight)
         else:
-            return array, label
+            weight = np.array([self.weights[0]])
+            weight = torch.FloatTensor(weight)
+        return array, label, weight
+
