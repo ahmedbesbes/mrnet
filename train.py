@@ -16,6 +16,8 @@ from tensorboardX import SummaryWriter
 from dataloader import MRDataset
 import model
 
+from sklearn import metrics
+
 
 def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_every=100):
     _ = model.train()
