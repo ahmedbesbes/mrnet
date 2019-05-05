@@ -55,16 +55,16 @@ class MRDataset(data.Dataset):
         label = self.labels[index]
         label = torch.FloatTensor([label])
 
-        # crop middle
-        pad = int((array.shape[2] - INPUT_DIM)/2)
-        array = array[:, pad:-pad, pad:-pad]
+        # # crop middle
+        # pad = int((array.shape[2] - INPUT_DIM)/2)
+        # array = array[:, pad:-pad, pad:-pad]
 
-        # standardize
-        array = (array - np.min(array)) / \
-            (np.max(array) - np.min(array)) * MAX_PIXEL_VAL
+        # # standardize
+        # array = (array - np.min(array)) / \
+        #     (np.max(array) - np.min(array)) * MAX_PIXEL_VAL
 
-        # normalize
-        array = (array - MEAN) / STDDEV
+        # # normalize
+        # array = (array - MEAN) / STDDEV
 
         if self.transform:
             array = self.transform(array)
