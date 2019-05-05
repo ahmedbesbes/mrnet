@@ -136,7 +136,6 @@ def evaluate_model(model, val_loader, epoch, num_epochs, writer, log_every=20):
     return val_loss_epoch, val_auc_epoch
 
 
-
 def run(args):
     now = datetime.now()
     logdir = "./logs/" + now.strftime("%Y%m%d-%H%M%S") + "/"
@@ -152,20 +151,22 @@ def run(args):
         transforms.Lambda(lambda x: x.repeat(3, 1, 1, 1).permute(1, 0, 2, 3)),
     ])
 
-    train_dataset = MRDataset('./data/', args.task, args.plane, transform=augmentor, train=True)
+    train_dataset = MRDataset('./data/', args.task,
+                              args.plane, transform=augmentor, train=True)
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=1, shuffle=True, num_workers=11, drop_last=False)
 
-    validation_dataset = MRDataset('./data/', args.task, args.plane, train=False)
+    validation_dataset = MRDataset(
+        './data/', args.task, args.plane, train=False)
     validation_loader = torch.utils.data.DataLoader(
         validation_dataset, batch_size=1, shuffle=-True, num_workers=11, drop_last=False)
 
-    
     mrnet = model.MRNet()
     mrnet = mrnet.cuda()
 
     optimizer = optim.Adam(mrnet.parameters(), lr=1e-5, weight_decay=0.01)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, factor=.3, threshold=1e-4, verbose=True)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, patience=3, factor=.3, threshold=1e-4, verbose=True)
 
     best_val_loss = float('inf')
     best_val_auc = float(0)
@@ -176,30 +177,29 @@ def run(args):
 
     for epoch in range(num_epochs):
 
-        train_loss, train_auc = train_model(mrnet, train_loader, epoch, num_epochs, optimizer, writer)
-        val_loss, val_auc = evaluate_model(mrnet, validation_loader, epoch, num_epochs, writer)
-        
-        print('train loss : {0} | train auc {1} | val loss {2} | val auc {3}'.format(train_loss, 
-                                                                                train_auc, 
-                                                                                val_loss, 
-                                                                                val_auc))
+        train_loss, train_auc = train_model(
+            mrnet, train_loader, epoch, num_epochs, optimizer, writer)
+        val_loss, val_auc = evaluate_model(
+            mrnet, validation_loader, epoch, num_epochs, writer)
+        print("train loss : {0} |train auc {1} | val loss {2} | val auc {3}".format(
+            train_loss, train_auc, val_loss, val_auc))
         scheduler.step(val_loss)
         iteration_change_loss += 1
-        
+
         print('-' * 30)
-        
+
         if val_auc > best_val_auc:
             best_val_auc = val_auc
             file_name = f'val_auc{val_auc:0.4f}_train_auc{train_auc:0.4f}_epoch{epoch+1}.pth'
             torch.save(mrnet, '../models/{0}'.format(file_name))
-        
-        if val_loss < best_val_loss: 
+
+        if val_loss < best_val_loss:
             best_val_loss = val_loss
             iteration_change_loss = 0
-            
+
         if iteration_change_loss == patience:
             print('Early stopping after {0} iterations without the decrease of the val loss'.
-                format(iteration_change_loss))
+                  format(iteration_change_loss))
 
 
 def parse_arguments():
