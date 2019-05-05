@@ -13,7 +13,7 @@ from torchvision import transforms
 from tensorboardX import SummaryWriter
 
 from dataloader import MRDataset
-from model import MRNet
+import model
 
 
 def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_every=100):
