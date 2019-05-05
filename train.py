@@ -181,7 +181,8 @@ def run(args):
             mrnet, train_loader, epoch, num_epochs, optimizer, writer)
         val_loss, val_auc = evaluate_model(
             mrnet, validation_loader, epoch, num_epochs, writer)
-        print("train loss : {0} |ùtrain auc {1} | val loss {2} | val auc {3}".format(
+        
+        print("train loss : {0} | train auc {1} | val loss {2} | val auc {3}".format(
             train_loss, train_auc, val_loss, val_auc))
         scheduler.step(val_loss)
         iteration_change_loss += 1
