@@ -10,6 +10,7 @@ import torch.optim as optim
 from torch.autograd import Variable
 from torchsample.transforms import RandomRotate, RandomTranslate, RandomFlip, ToTensor, Compose, RandomAffine
 from torchvision import transforms
+import torch.nn.functional as F
 from tensorboardX import SummaryWriter
 
 from dataloader import MRDataset
