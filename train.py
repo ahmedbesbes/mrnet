@@ -196,7 +196,7 @@ def run(args):
         if val_auc > best_val_auc:
             best_val_auc = val_auc
             file_name = f'val_auc{val_auc:0.4f}_train_auc{train_auc:0.4f}_epoch{epoch+1}.pth'
-            torch.save(mrnet, '../models/{0}'.format(file_name))
+            torch.save(mrnet, './models/{0}'.format(file_name))
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
