@@ -185,12 +185,14 @@ def run(args):
             mrnet, train_loader, epoch, num_epochs, optimizer, writer)
         val_loss, val_auc = evaluate_model(
             mrnet, validation_loader, epoch, num_epochs, writer)
-        
+
         print("train loss : {0} | train auc {1} | val loss {2} | val auc {3}".format(
             train_loss, train_auc, val_loss, val_auc))
-        scheduler.step(val_loss)
-        iteration_change_loss += 1
 
+        if args.lr_scheduler == 1:
+            scheduler.step(val_loss)
+
+        iteration_change_loss += 1
         print('-' * 30)
 
         if val_auc > best_val_auc:
@@ -214,6 +216,7 @@ def parse_arguments():
     parser.add_argument('-p', '--plane', type=str, required=True,
                         choices=['saggital', 'coronal', 'axial'])
     parser.add_argument('--augment', type=int, choices=[0, 1], default=1)
+    parser.add_argument('--lr_scheduler', type=int, choices=[0, 1], default=1)
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--lr', type=float, default=1e-5)
     args = parser.parse_args()
