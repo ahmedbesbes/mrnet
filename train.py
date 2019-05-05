@@ -179,7 +179,7 @@ def run(args):
         train_loss, train_auc = train_model(mrnet, train_loader, epoch, num_epochs, optimizer, writer)
         val_loss, val_auc = evaluate_model(mrnet, validation_loader, epoch, num_epochs, writer)
         
-        print('train loss : {} | train auc {} | val loss {} | val auc {}'.format(train_loss, 
+        print('train loss : {0} | train auc {1} | val loss {2} | val auc {3}'.format(train_loss, 
                                                                                 train_auc, 
                                                                                 val_loss, 
                                                                                 val_auc))
