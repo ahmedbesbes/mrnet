@@ -30,7 +30,7 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_e
     y_trues = []
     losses = []
 
-    for i, (image, label, weight, _, _) in enumerate(train_loader):
+    for i, (image, label, weight) in enumerate(train_loader):
         optimizer.zero_grad()
 
         if torch.cuda.is_available():
@@ -93,7 +93,7 @@ def evaluate_model(model, val_loader, epoch, num_epochs, writer, log_every=20):
     y_preds = []
     losses = []
 
-    for i, (image, label, weight, _, _) in enumerate(val_loader):
+    for i, (image, label, weight) in enumerate(val_loader):
 
         if torch.cuda.is_available():
             image = image.cuda()
@@ -205,8 +205,9 @@ def run(args):
 
         if val_auc > best_val_auc:
             best_val_auc = val_auc
-            file_name = f'model_{args.task}_{args.plane}_val_auc{val_auc:0.4f}_train_auc{train_auc:0.4f}_epoch{epoch+1}.pth'
-            torch.save(mrnet, './models/{0}'.format(file_name))
+            if bool(args.save_model):
+                file_name = f'model_{args.task}_{args.plane}_val_auc{val_auc:0.4f}_train_auc{train_auc:0.4f}_epoch{epoch+1}.pth'
+                torch.save(mrnet, './models/{0}'.format(file_name))
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
@@ -229,7 +230,7 @@ def parse_arguments():
     parser.add_argument('--lr', type=float, default=1e-5)
     parser.add_argument('--flush_history', type=int, choices=[0, 1], default=0)
     parser.add_argument('--normalize', type=int, choices=[0, 1], default=0)
-    parser.add_argument('--save_mode')
+    parser.add_argument('--save_model', type=int, choices=[0, 1], default=1)
 
     args = parser.parse_args()
     return args
