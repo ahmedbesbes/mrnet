@@ -30,7 +30,7 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_e
     y_trues = []
     losses = []
 
-    for i, (image, label, weight) in enumerate(train_loader):
+    for i, (image, label, weight, _, _) in enumerate(train_loader):
         optimizer.zero_grad()
 
         if torch.cuda.is_available():
@@ -93,7 +93,7 @@ def evaluate_model(model, val_loader, epoch, num_epochs, writer, log_every=20):
     y_preds = []
     losses = []
 
-    for i, (image, label, weight) in enumerate(val_loader):
+    for i, (image, label, weight, _, _) in enumerate(val_loader):
 
         if torch.cuda.is_available():
             image = image.cuda()
@@ -148,7 +148,7 @@ def run(args):
         for f in objects:
             if os.path.isdir(log_root_folder + f):
                 shutil.rmtree(log_root_folder + f)
-    
+
     now = datetime.now()
     logdir = log_root_folder + now.strftime("%Y%m%d-%H%M%S") + "/"
     os.makedirs(logdir)
@@ -164,12 +164,12 @@ def run(args):
     ])
 
     train_dataset = MRDataset('./data/', args.task,
-                              args.plane, transform=augmentor, train=True)
+                              args.plane, transform=augmentor, train=True, normalize=bool(args.normalize))
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=1, shuffle=True, num_workers=11, drop_last=False)
 
     validation_dataset = MRDataset(
-        './data/', args.task, args.plane, train=False)
+        './data/', args.task, args.plane, train=False, normalize=bool(args.normalize))
     validation_loader = torch.utils.data.DataLoader(
         validation_dataset, batch_size=1, shuffle=-True, num_workers=11, drop_last=False)
 
@@ -228,6 +228,7 @@ def parse_arguments():
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--lr', type=float, default=1e-5)
     parser.add_argument('--flush_history', type=int, choices=[0, 1], default=0)
+    parser.add_argument('--normalize', type=int, choices=[0, 1], default=0)
 
     args = parser.parse_args()
     return args
