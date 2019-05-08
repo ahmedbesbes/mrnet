@@ -205,7 +205,7 @@ def run(args):
 
         if val_auc > best_val_auc:
             best_val_auc = val_auc
-            file_name = f'val_auc{val_auc:0.4f}_train_auc{train_auc:0.4f}_epoch{epoch+1}.pth'
+            file_name = f'model_{args.task}_{args.plane}_val_auc{val_auc:0.4f}_train_auc{train_auc:0.4f}_epoch{epoch+1}.pth'
             torch.save(mrnet, './models/{0}'.format(file_name))
 
         if val_loss < best_val_loss:
@@ -229,6 +229,7 @@ def parse_arguments():
     parser.add_argument('--lr', type=float, default=1e-5)
     parser.add_argument('--flush_history', type=int, choices=[0, 1], default=0)
     parser.add_argument('--normalize', type=int, choices=[0, 1], default=0)
+    parser.add_argument('--save_mode')
 
     args = parser.parse_args()
     return args
