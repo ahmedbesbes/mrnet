@@ -1,3 +1,4 @@
+import shutil
 import os
 from datetime import datetime
 import argparse
@@ -141,8 +142,15 @@ def evaluate_model(model, val_loader, epoch, num_epochs, writer, log_every=20):
 
 
 def run(args):
+    log_root_folder = "./logs/{0}/{1}/".format(args.task, args.plane)
+    if args.flush_history == 1:
+        objects = os.listdir(log_root_folder)
+        for f in objects:
+            if os.path.isdir(log_root_folder + f):
+                shutil.rmtree(log_root_folder + f)
+    
     now = datetime.now()
-    logdir = "./logs/" + now.strftime("%Y%m%d-%H%M%S") + "/"
+    logdir = log_root_folder + now.strftime("%Y%m%d-%H%M%S") + "/"
     os.makedirs(logdir)
 
     writer = SummaryWriter(logdir)
@@ -219,6 +227,8 @@ def parse_arguments():
     parser.add_argument('--lr_scheduler', type=int, choices=[0, 1], default=1)
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--lr', type=float, default=1e-5)
+    parser.add_argument('--flush_history', type=int, choices=[0, 1], default=0)
+
     args = parser.parse_args()
     return args
 
