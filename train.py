@@ -223,7 +223,7 @@ def parse_arguments():
     parser.add_argument('-t', '--task', type=str, required=True,
                         choices=['abnormal', 'acl', 'meniscus'])
     parser.add_argument('-p', '--plane', type=str, required=True,
-                        choices=['saggital', 'coronal', 'axial'])
+                        choices=['sagittal', 'coronal', 'axial'])
     parser.add_argument('--augment', type=int, choices=[0, 1], default=1)
     parser.add_argument('--lr_scheduler', type=int, choices=[0, 1], default=1)
     parser.add_argument('--epochs', type=int, default=50)
