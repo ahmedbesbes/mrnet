@@ -206,7 +206,7 @@ def run(args):
         if val_auc > best_val_auc:
             best_val_auc = val_auc
             if bool(args.save_model):
-                file_name = f'model_{args.task}_{args.plane}_val_auc{val_auc:0.4f}_train_auc{train_auc:0.4f}_epoch{epoch+1}.pth'
+                file_name = f'model_{args.task}_{args.plane}_val_auc_{val_auc:0.4f}_train_auc_{train_auc:0.4f}_epoch_{epoch+1}.pth'
                 torch.save(mrnet, './models/{0}'.format(file_name))
 
         if val_loss < best_val_loss:
@@ -216,6 +216,7 @@ def run(args):
         if iteration_change_loss == patience:
             print('Early stopping after {0} iterations without the decrease of the val loss'.
                   format(iteration_change_loss))
+            break
 
 
 def parse_arguments():
