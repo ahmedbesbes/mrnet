@@ -185,7 +185,7 @@ def run(args):
 
     num_epochs = args.epochs
     iteration_change_loss = 0
-    patience = 4
+    patience = args.patience
 
     for epoch in range(num_epochs):
 
@@ -232,6 +232,7 @@ def parse_arguments():
     parser.add_argument('--flush_history', type=int, choices=[0, 1], default=0)
     parser.add_argument('--normalize', type=int, choices=[0, 1], default=0)
     parser.add_argument('--save_model', type=int, choices=[0, 1], default=1)
+    parser.add_argument('--patience', type=int, choices=[0, 1], default=4)
 
     args = parser.parse_args()
     return args
