@@ -26,6 +26,7 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_e
     if torch.cuda.is_available():
         model.cuda()
 
+    test2 = []
     y_preds = []
     y_trues = []
     losses = []
