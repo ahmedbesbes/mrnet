@@ -208,7 +208,8 @@ def run(args):
             if bool(args.save_model):
                 file_name = f'model_{args.task}_{args.plane}_val_auc_{val_auc:0.4f}_train_auc_{train_auc:0.4f}_epoch_{epoch+1}.pth'
                 for f in os.listdir('./models/'):
-                    os.remove(f'./models/{f}')
+                    if (args.task in f) and (args.plane in f):
+                        os.remove(f'./models/{f}')
                 torch.save(mrnet, f'./models/{file_name}')
 
         if val_loss < best_val_loss:
