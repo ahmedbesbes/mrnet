@@ -209,7 +209,7 @@ def run(args):
                 file_name = f'model_{args.task}_{args.plane}_val_auc_{val_auc:0.4f}_train_auc_{train_auc:0.4f}_epoch_{epoch+1}.pth'
                 for f in os.listdir('./models/'):
                     os.remove(f'./models/{f}')
-                torch.save(mrnet, f'./models/{f}')
+                torch.save(mrnet, f'./models/{file_name}')
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
