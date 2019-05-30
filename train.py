@@ -176,7 +176,7 @@ def run(args):
     mrnet = model.MRNet()
     mrnet = mrnet.cuda()
 
-    optimizer = optim.Adam(mrnet.parameters(), lr=1e-5, weight_decay=0.01)
+    optimizer = optim.Adam(mrnet.parameters(), lr=1e-5, weight_decay=0.1)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, patience=3, factor=.3, threshold=1e-4, verbose=True)
 
@@ -207,7 +207,9 @@ def run(args):
             best_val_auc = val_auc
             if bool(args.save_model):
                 file_name = f'model_{args.task}_{args.plane}_val_auc_{val_auc:0.4f}_train_auc_{train_auc:0.4f}_epoch_{epoch+1}.pth'
-                torch.save(mrnet, './models/{0}'.format(file_name))
+                for f in os.listdir('./models/'):
+                    os.remove(f'./models/{f}')
+                torch.save(mrnet, f'./models/{f}')
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
@@ -232,7 +234,7 @@ def parse_arguments():
     parser.add_argument('--flush_history', type=int, choices=[0, 1], default=0)
     parser.add_argument('--normalize', type=int, choices=[0, 1], default=0)
     parser.add_argument('--save_model', type=int, choices=[0, 1], default=1)
-    parser.add_argument('--patience', type=int, choices=[0, 1], default=4)
+    parser.add_argument('--patience', type=int, choices=[0, 1], default=5)
 
     args = parser.parse_args()
     return args
