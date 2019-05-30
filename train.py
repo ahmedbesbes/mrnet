@@ -26,7 +26,6 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_e
     if torch.cuda.is_available():
         model.cuda()
 
-    test2 = []
     y_preds = []
     y_trues = []
     losses = []
@@ -158,9 +157,9 @@ def run(args):
 
     augmentor = Compose([
         transforms.Lambda(lambda x: torch.Tensor(x)),
-        RandomTranslate([0.11, 0.11]),
         RandomRotate(25),
-        RandomFlip(),
+        RandomTranslate([0.11, 0.11]),
+        RandomFlip(),   
         transforms.Lambda(lambda x: x.repeat(3, 1, 1, 1).permute(1, 0, 2, 3)),
     ])
 
