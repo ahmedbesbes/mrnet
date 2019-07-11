@@ -48,14 +48,6 @@ class MRDataset(data.Dataset):
         array = np.load(self.paths[index])
         label = self.labels[index]
         label = torch.FloatTensor([label])
-
-        # # crop middle
-        # pad = int((array.shape[2] - INPUT_DIM)/2)
-        # array = array[:, pad:-pad, pad:-pad]
-
-        array_min = np.min(array)
-        array_max = np.max(array)
-
         if self.transform:
             array = self.transform(array)
         else:
