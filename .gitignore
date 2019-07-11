@@ -4,3 +4,5 @@ logs/
 notebooks/
 .vscode/
 __pycache__/
+data/assets/
+data/CAMS/
