@@ -10,20 +10,13 @@ from torchvision import transforms
 from torchsample.transforms import RandomRotate, RandomTranslate, RandomFlip, ToTensor, Compose, RandomAffine
 
 
-INPUT_DIM = 224
-MAX_PIXEL_VAL = 255
-MEAN = 58.09
-STDDEV = 49.73
-
-
 class MRDataset(data.Dataset):
-    def __init__(self, root_dir, task, plane, train=True, transform=None, weights=None, normalize=False):
+    def __init__(self, root_dir, task, plane, train=True, transform=None, weights=None):
         super().__init__()
         self.task = task
         self.plane = plane
         self.root_dir = root_dir
         self.train = train
-        self.normalize = normalize
         if self.train:
             self.folder_path = self.root_dir + 'train/{0}/'.format(plane)
             self.records = pd.read_csv(
@@ -62,14 +55,6 @@ class MRDataset(data.Dataset):
 
         array_min = np.min(array)
         array_max = np.max(array)
-
-        if self.normalize:
-            # standardize
-            array = (array - array_min) / \
-                (array_max - array_min) * MAX_PIXEL_VAL
-
-            # normalize
-            array = (array - MEAN) / STDDEV
 
         if self.transform:
             array = self.transform(array)
