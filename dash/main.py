@@ -1,6 +1,7 @@
 # Introducing callbacks
 
 # -*- coding: utf-8 -*-
+import base64
 import time
 import dash
 import dash_core_components as dcc
@@ -11,10 +12,12 @@ import dash_daq as daq
 import pandas as pd
 import numpy as np
 
+import cv2
+
 
 # prepare the data -- begin
 
-cases = pd.read_csv('../data/train-abnormal.csv',
+cases = pd.read_csv('../data/valid-acl.csv',
                     header=None,
                     names=['Case', 'Abnormal'],
                     dtype={'Case': str, 'Abnormal': np.int64}
@@ -35,14 +38,9 @@ app.layout = html.Div(
     html.Div([
         html.Div(
             [
-                html.H1(children='MRI Analysis',
-                        className='nine columns'),
-                html.Div(children='''
-                         A web application framework for knee MRI analysis. 
-                        ''',
-                         className='nine columns'
-                         )
-            ], className="row"
+                html.H1(children='Knee MRI Analysis', className='nine columns')
+            ], 
+            className="row"
         ),
 
         html.Div(
@@ -51,42 +49,29 @@ app.layout = html.Div(
                     [
                         html.P('Select a medical case (i.e. a patient)'),
                         html.Div([
+                            dcc.Checklist(
+                                id='ground_truth'
+                                
+                            )
+                        ]),
+                        html.Div([
                             dcc.Dropdown(
                                 id='cases',
                                 options=[
                                     {'label': case, 'value': case} for case in case_list
                                 ],
-                                value='0000',
+                                value='1130',
                                 placeholder="Pick a case",
+                                clearable=False
+
                             )
                         ],
                             style={'margin-bottom': 20}
                         ),
-                        html.P('Select an mri slice'),
-                        html.Div([
-                            dcc.Slider(
-                                id='slider',
-                            )],
-                        )
                     ],
                     className='six columns',
                     style={'margin-top': '10'}
                 ),
-
-                html.Div(
-                    [
-                        dcc.RadioItems(
-                        options=[
-                            {'label': 'Abnormal', 'value': 'NYC'},
-                            {'label': 'ACL', 'value': 'MTL'},
-                            {'label': 'Meniscus', 'value': 'SF'}
-                        ],
-                        value='MTL',
-                        # labelStyle={'display': 'inline-block'}
-                    )],
-                    className='six columns'
-                )
-
             ], className="row"
         ),
 
@@ -95,119 +80,208 @@ app.layout = html.Div(
         html.Div(
             [
                 html.Div([
-                    dcc.Graph(
-                        id='heatmap_1',
-                    )
-                ], className='six columns'
+                    html.Div([
+                        dcc.Slider(id='slider_axial')
+                    ]),
+                    html.Hr(),
+                    html.Div([
+                        html.Div([
+                                html.Img(
+                                    id="slice_axial",
+                                    width='250',
+                                    height='250',
+                                ),
+                            ], 
+                            style={'margin-right': '15', 'float': 'left'}
+                        ),
+                        html.Div([
+                                html.Img(
+                                    id="cam_axial",
+                                    width='250',
+                                    height='250',
+                                ),
+                            ], 
+                            # style={'margin-right': '5'}
+                        )
+                    ])
+                    ],
+                    className="four columns"
+                ),
+                html.Div([
+                    html.Div([
+                        html.Img(id="slice_coronal"),
+                        html.Img(id="cam_coronal")
+                    ]),
+                    html.Div([
+                        dcc.Slider(id='slider_coronal')
+                    ])],
+                    className="four columns"
+                ),
+                html.Div([
+                    html.Div([
+                        html.Img(id="slice_sagittal"),
+                        html.Img(id="cam_sagittal")
+                    ]),
+                    html.Div([
+                        dcc.Slider(id='slider_sagittal')
+                    ])],
+                    className="four columns"
                 ),
 
-                html.Div([
-                    dcc.Graph(
-                        id='heatmap_2',
-                    )
-                ], className='six columns'
-                )
-            ], className="row"
+            ],
+            className='row'
         )
     ], className='ten columns offset-by-one')
 )
 
 
-# slider update --- begin
-
+# update axial slider --- begin
 @app.callback(
-    dash.dependencies.Output('slider', 'value'),
+    dash.dependencies.Output('slider_axial', 'value'),
     [
         dash.dependencies.Input('cases', 'value'),
     ]
 )
 def set_slider_value(selected_case):
-    mri = np.load(f'../data/train/axial/{selected_case}.npy')
+    mri = np.load(f'../data/valid/axial/{selected_case}.npy')
     number_slices = mri.shape[0]
     return number_slices // 2
 
-
 @app.callback(
-    dash.dependencies.Output('slider', 'max'),
+    dash.dependencies.Output('slider_axial', 'max'),
     [
         dash.dependencies.Input('cases', 'value'),
     ]
 )
 def set_slider_max(selected_case):
-    mri = np.load(f'../data/train/axial/{selected_case}.npy')
+    mri = np.load(f'../data/valid/axial/{selected_case}.npy')
     number_slices = mri.shape[0]
     return number_slices - 1
 
 
 @app.callback(
-    dash.dependencies.Output('slider', 'marks'),
+    dash.dependencies.Output('slider_axial', 'marks'),
     [
         dash.dependencies.Input('cases', 'value'),
     ]
 )
 def set_slider_marks(selected_case):
-    mri = np.load(f'../data/train/axial/{selected_case}.npy')
+    mri = np.load(f'../data/valid/axial/{selected_case}.npy')
     number_slices = mri.shape[0]
     marks = {str(i): '{}'.format(i) for i in range(number_slices)[::2]}
     return marks
 
-# slider update --- end
+# update axial slider --- end
 
-# mri update slice --- begin
+# update coronal slider --- begin
+@app.callback(
+    dash.dependencies.Output('slider_coronal', 'value'),
+    [
+        dash.dependencies.Input('cases', 'value'),
+    ]
+)
+def set_slider_value(selected_case):
+    mri = np.load(f'../data/valid/coronal/{selected_case}.npy')
+    number_slices = mri.shape[0]
+    return number_slices // 2
+
+@app.callback(
+    dash.dependencies.Output('slider_coronal', 'max'),
+    [
+        dash.dependencies.Input('cases', 'value'),
+    ]
+)
+def set_slider_max(selected_case):
+    mri = np.load(f'../data/valid/coronal/{selected_case}.npy')
+    number_slices = mri.shape[0]
+    return number_slices - 1
 
 
 @app.callback(
-    dash.dependencies.Output('heatmap_1', 'figure'),
+    dash.dependencies.Output('slider_coronal', 'marks'),
     [
         dash.dependencies.Input('cases', 'value'),
-        dash.dependencies.Input('slider', 'value')
     ]
 )
-def update_mri(selected_case, s):
-    if selected_case is None:
-        selected_case = '0000'
-    if s is None:
-        s = 0
+def set_slider_marks(selected_case):
+    mri = np.load(f'../data/valid/coronal/{selected_case}.npy')
+    number_slices = mri.shape[0]
+    marks = {str(i): '{}'.format(i) for i in range(number_slices)[::2]}
+    return marks
 
-    mri = np.load(f'../data/train/axial/{selected_case}.npy')[s]
-    data = {
-        'z': mri,
-        'type': 'heatmap'
-    }
-    figure = {
-        'data': [data],
-    }
-    return figure
+# update coronal slider --- end
 
-# mri update slice --- end
+# update sagittal slider --- begin
+@app.callback(
+    dash.dependencies.Output('slider_sagittal', 'value'),
+    [
+        dash.dependencies.Input('cases', 'value'),
+    ]
+)
+def set_slider_value(selected_case):
+    mri = np.load(f'../data/valid/sagittal/{selected_case}.npy')
+    number_slices = mri.shape[0]
+    return number_slices // 2
 
-# mri update heatmap --- begin
+@app.callback(
+    dash.dependencies.Output('slider_sagittal', 'max'),
+    [
+        dash.dependencies.Input('cases', 'value'),
+    ]
+)
+def set_slider_max(selected_case):
+    mri = np.load(f'../data/valid/sagittal/{selected_case}.npy')
+    number_slices = mri.shape[0]
+    return number_slices - 1
 
 
 @app.callback(
-    dash.dependencies.Output('heatmap_2', 'figure'),
+    dash.dependencies.Output('slider_sagittal', 'marks'),
     [
         dash.dependencies.Input('cases', 'value'),
-        dash.dependencies.Input('slider', 'value')
     ]
 )
-def update_heatmap(selected_case, s):
-    if selected_case is None:
-        selected_case = '0000'
-    if s is None:
-        s = 0
+def set_slider_marks(selected_case):
+    mri = np.load(f'../data/valid/sagittal/{selected_case}.npy')
+    number_slices = mri.shape[0]
+    marks = {str(i): '{}'.format(i) for i in range(number_slices)[::2]}
+    return marks
 
-    mri = np.load(f'../data/train/axial/{selected_case}.npy')[s]
-    data = {
-        'z': mri,
-        'type': 'heatmap'
-    }
-    figure = {
-        'data': [data],
-    }
-    return figure
+# update sagittal slider --- end
 
-# mri update slice --- end
+# update slice axial --- begin
+@app.callback(
+    dash.dependencies.Output('slice_axial', 'src'),
+    [
+        dash.dependencies.Input('cases', 'value'),
+        dash.dependencies.Input('slider_axial', 'value'),
+
+    ])
+def update_slice_axial(selected_case, selected_slice):
+    s = np.load(f'../data/valid/axial/{selected_case}.npy')[selected_slice]
+    cv2.imwrite(f'./slice_axial.png', s)
+    encoded_image = base64.b64encode(open('./slice_axial.png', 'rb').read())
+    return 'data:image/png;base64,{}'.format(encoded_image.decode())
+# update slice axial --- end
+
+# update cam axial --- begin
+@app.callback(
+    dash.dependencies.Output('cam_axial', 'src'),
+    [
+        dash.dependencies.Input('cases', 'value'),
+        dash.dependencies.Input('slider_axial', 'value'),
+
+    ])
+def update_cam_axial(selected_case, selected_slice):
+    selected_case = int(selected_case) - 1130
+    selected_case = '0' * (4 - len(str(selected_case))) + str(selected_case) 
+    src = f'./CAMS/axial/{selected_case}/cams/{selected_slice}.png'
+    encoded_image = base64.b64encode(open(src, 'rb').read())
+    return 'data:image/png;base64,{}'.format(encoded_image.decode())
+
+
+# update slice axial --- end
+
 
 
 if __name__ == '__main__':
