@@ -159,17 +159,17 @@ def run(args):
         transforms.Lambda(lambda x: torch.Tensor(x)),
         RandomRotate(25),
         RandomTranslate([0.11, 0.11]),
-        RandomFlip(),   
+        RandomFlip(),
         transforms.Lambda(lambda x: x.repeat(3, 1, 1, 1).permute(1, 0, 2, 3)),
     ])
 
     train_dataset = MRDataset('./data/', args.task,
-                              args.plane, transform=augmentor, train=True, normalize=bool(args.normalize))
+                              args.plane, transform=augmentor, train=True)
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=1, shuffle=True, num_workers=11, drop_last=False)
 
     validation_dataset = MRDataset(
-        './data/', args.task, args.plane, train=False, normalize=bool(args.normalize))
+        './data/', args.task, args.plane, train=False)
     validation_loader = torch.utils.data.DataLoader(
         validation_dataset, batch_size=1, shuffle=-True, num_workers=11, drop_last=False)
 
@@ -233,7 +233,6 @@ def parse_arguments():
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--lr', type=float, default=1e-5)
     parser.add_argument('--flush_history', type=int, choices=[0, 1], default=0)
-    parser.add_argument('--normalize', type=int, choices=[0, 1], default=0)
     parser.add_argument('--save_model', type=int, choices=[0, 1], default=1)
     parser.add_argument('--patience', type=int, choices=[0, 1], default=5)
 
