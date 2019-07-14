@@ -1,6 +1,6 @@
 # MRNet network
 
-This repository contains an implementation of a convolutional neural network for knee injury classification from MRI exams.
+This repository contains an implementation of a convolutional neural network that classifies specific knee injuries from MRI exams.
 
 ## Dataset: MRNet 
 
