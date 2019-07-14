@@ -1,3 +1,9 @@
+[![MIT](https://img.shields.io/badge/license-MIT-5eba00.svg)](https://github.com/ahmedbesbes/character-based-cnn/blob/master/LICENSE)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/ahmedbesbes/mrnet)
+[![Twitter](https://img.shields.io/twitter/follow/ahmed_besbes_.svg?label=Follow&style=social)](https://twitter.com/ahmed_besbes_)
+[![Stars](https://img.shields.io/github/stars/ahmedbesbes/character-based-cnn.svg?style=social)](https://github.com/ahmedbesbes/mrnet/stargazers)
+
+
 # Deep learning in medical imaging: How to automate the detection of knee injuries in MRI exams ? 
 
 This repository contains an implementation of a convolutional neural network that classifies specific knee injuries from MRI exams.
