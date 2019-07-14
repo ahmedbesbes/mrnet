@@ -1,4 +1,4 @@
-# MRNet network
+# Deep learning in medical imaging: How to automate the detection of knee injuries in MRI exams ? 
 
 This repository contains an implementation of a convolutional neural network that classifies specific knee injuries from MRI exams.
 
