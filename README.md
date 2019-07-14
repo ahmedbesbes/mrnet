@@ -50,7 +50,7 @@ example to train a model to detect acl tears on the sagittal plane for a 20 epoc
 
 I trained an ACL tear classifier on a sagittal plane and got the following AUC scores:
 
-- on train: 0.8850
+- on train: 0.8669
 - on validation: 0.8850
 
 Logs on Tensorboard:
