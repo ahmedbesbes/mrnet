@@ -70,3 +70,8 @@ Logs on Tensorboard:
 
 <img src="./images/sagittal_tensorboard.png">
 
+
+## Contributions - PR are welcome:
+
+If you feel that some functionalities or improvements could be added to the project, don't hesitate to submit a pull request.
+
