@@ -48,6 +48,10 @@ example to train a model to detect acl tears on the sagittal plane for a 20 epoc
 
 `python -t acl -p sagittal --epochs=20`
 
+Note: Before running the script, add the following (empty) folders at the root of the project:
+- models
+- logs
+
 
 ## Results:
 
