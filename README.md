@@ -14,7 +14,9 @@ For more information about the ACL tear problem and the MRNet data please refer 
 
 This charts summarizes the architecture of the project:
 
-<img src="./images/pipeline.png">
+<div style="text-align: center;">
+    <img src="./images/pipeline.png">
+</div>
 
 For more details about the code, please refer to my blog post.
 
