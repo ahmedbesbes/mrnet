@@ -8,15 +8,16 @@ The data comes from Stanford ML Group research lab. It consits of 1,370 knee MRI
 
 For more information about the ACL tear problem and the MRNet data please refer to my blog post where you can investigate the data and build the following data visualization in jupyter notebook:
 
-<img src="./images/mri.gif">
+
+<div style="text-align:center;">
+    <img src="./images/mri.gif">
+</div>
 
 ## Code structure:
 
 This charts summarizes the architecture of the project:
 
-<div style="text-align: center;">
-    <img src="./images/pipeline.png">
-</div>
+<img src="./images/pipeline.png">
 
 For more details about the code, please refer to my blog post.
 
