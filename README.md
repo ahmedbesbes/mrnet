@@ -8,6 +8,8 @@
 
 This repository contains an implementation of a convolutional neural network that classifies specific knee injuries from MRI exams.
 
+It also contains the matieral of a series of posts I wrote on <a href="http://ahmedbesbes.com"> my blog</a>.
+
 ## Dataset: MRNet 
 
 The data comes from Stanford ML Group research lab. It consits of 1,370 knee MRI exams performed at Stanford University Medical Center to study the presence of Anterior Cruciate Ligament (ACL) tears.
