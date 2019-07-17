@@ -19,6 +19,8 @@ For more information about the ACL tear problem and the MRNet data please refer 
     <img src="./images/mri.gif">
 </p>
 
+To learn more about the data and how to realize this visualization widget, read <a href="https://ahmedbesbes.com/automate-the-diagnosis-of-knee-injuries-with-deep-learning-part-1-an-overview-of-the-mrnet-dataset.html">my first post.</a>
+
 ## Code structure:
 
 This charts summarizes the architecture of the project:
