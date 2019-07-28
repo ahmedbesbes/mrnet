@@ -116,7 +116,7 @@ def evaluate_model(model, val_loader, epoch, num_epochs, writer, log_every=20):
 
         probas = torch.sigmoid(prediction)
 
-        y_trues.append(int(label[0][0]))
+        y_trues.append(int(label[0][1]))
         y_preds.append(probas[0][1].item())
 
         try:
