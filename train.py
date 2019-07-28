@@ -1,5 +1,6 @@
 import shutil
 import os
+import time
 from datetime import datetime
 import argparse
 import numpy as np
@@ -37,10 +38,9 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_e
             image = image.cuda()
             label = label.cuda()
             weight = weight.cuda()
-        
+
         label = label[0]
         weight = weight[0]
-
 
         prediction = model.forward(image.float())
 
@@ -50,7 +50,7 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_e
 
         loss_value = loss.item()
         losses.append(loss_value)
-        
+
         probas = torch.sigmoid(prediction)
 
         y_trues.append(int(label[0][1]))
@@ -61,12 +61,9 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_e
         except:
             auc = 0.5
 
-
         writer.add_scalar('Train/Loss', loss_value,
                           epoch * len(train_loader) + i)
         writer.add_scalar('Train/AUC', auc, epoch * len(train_loader) + i)
-
-
 
         if (i % log_every == 0) & (i > 0):
             print('''[Epoch: {0} / {1} |Single batch number : {2} / {3} ]| avg train loss {4} | train auc : {5}'''.
@@ -196,14 +193,18 @@ def run(args):
     log_every = args.log_every
 
     for epoch in range(num_epochs):
+        t_start = time.time()
 
         train_loss, train_auc = train_model(
             mrnet, train_loader, epoch, num_epochs, optimizer, writer, log_every)
         val_loss, val_auc = evaluate_model(
             mrnet, validation_loader, epoch, num_epochs, writer)
 
-        print("train loss : {0} | train auc {1} | val loss {2} | val auc {3}".format(
-            train_loss, train_auc, val_loss, val_auc))
+        t_end = time.time()
+        delta = t_end - t_start
+
+        print("train loss : {0} | train auc {1} | val loss {2} | val auc {3} | elapsed time {} s".format(
+            train_loss, train_auc, val_loss, val_auc, delta))
 
         if args.lr_scheduler == 1:
             scheduler.step(val_loss)
@@ -214,9 +215,9 @@ def run(args):
         if val_auc > best_val_auc:
             best_val_auc = val_auc
             if bool(args.save_model):
-                file_name = f'model_{args.task}_{args.plane}_val_auc_{val_auc:0.4f}_train_auc_{train_auc:0.4f}_epoch_{epoch+1}.pth'
+                file_name = f'model_{args.prefix_name}_{args.task}_{args.plane}_val_auc_{val_auc:0.4f}_train_auc_{train_auc:0.4f}_epoch_{epoch+1}.pth'
                 for f in os.listdir('./models/'):
-                    if (args.task in f) and (args.plane in f):
+                    if (args.task in f) and (args.plane in f) and (args.prefix_name in f):
                         os.remove(f'./models/{f}')
                 torch.save(mrnet, f'./models/{file_name}')
 
@@ -236,6 +237,7 @@ def parse_arguments():
                         choices=['abnormal', 'acl', 'meniscus'])
     parser.add_argument('-p', '--plane', type=str, required=True,
                         choices=['sagittal', 'coronal', 'axial'])
+    parser.add_argument('--prefix_name', type=str, required=True)
     parser.add_argument('--augment', type=int, choices=[0, 1], default=1)
     parser.add_argument('--lr_scheduler', type=int, choices=[0, 1], default=1)
     parser.add_argument('--epochs', type=int, default=50)
