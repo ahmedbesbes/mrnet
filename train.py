@@ -37,32 +37,38 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_e
             image = image.cuda()
             label = label.cuda()
             weight = weight.cuda()
+        
+        label = label[0]
+        weight = weight[0]
+
 
         prediction = model.forward(image.float())
 
-        y_pred = torch.sigmoid(prediction).item()
-        y_true = int(label.item())
+        print(f'label: {label}')
 
-        y_preds.append(y_pred)
-        y_trues.append(y_true)
+        loss = torch.nn.BCEWithLogitsLoss(weight=weight)(prediction, label)
+        loss.backward()
+        optimizer.step()
+
+        loss_value = loss.item()
+        losses.append(loss_value)
+        
+        probas = torch.sigmoid(prediction)
+
+        y_trues.append(int(label[0][0]))
+        y_preds.append(probas[0][1].item())
 
         try:
             auc = metrics.roc_auc_score(y_trues, y_preds)
         except:
             auc = 0.5
 
-        loss = F.binary_cross_entropy_with_logits(
-            prediction[0], label[0], weight=weight[0])
-
-        loss.backward()
-        optimizer.step()
-
-        loss_value = loss.item()
-        losses.append(loss_value)
 
         writer.add_scalar('Train/Loss', loss_value,
                           epoch * len(train_loader) + i)
         writer.add_scalar('Train/AUC', auc, epoch * len(train_loader) + i)
+
+
 
         if (i % log_every == 0) & (i > 0):
             print('''[Epoch: {0} / {1} |Single batch number : {2} / {3} ]| avg train loss {4} | train auc : {5}'''.
@@ -174,7 +180,9 @@ def run(args):
         validation_dataset, batch_size=1, shuffle=-True, num_workers=11, drop_last=False)
 
     mrnet = model.MRNet()
-    mrnet = mrnet.cuda()
+
+    if torch.cuda.is_available():
+        mrnet = mrnet.cuda()
 
     optimizer = optim.Adam(mrnet.parameters(), lr=1e-5, weight_decay=0.1)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
@@ -186,11 +194,12 @@ def run(args):
     num_epochs = args.epochs
     iteration_change_loss = 0
     patience = args.patience
+    log_every = args.log_every
 
     for epoch in range(num_epochs):
 
         train_loss, train_auc = train_model(
-            mrnet, train_loader, epoch, num_epochs, optimizer, writer)
+            mrnet, train_loader, epoch, num_epochs, optimizer, writer, log_every)
         val_loss, val_auc = evaluate_model(
             mrnet, validation_loader, epoch, num_epochs, writer)
 
@@ -235,7 +244,7 @@ def parse_arguments():
     parser.add_argument('--flush_history', type=int, choices=[0, 1], default=0)
     parser.add_argument('--save_model', type=int, choices=[0, 1], default=1)
     parser.add_argument('--patience', type=int, choices=[0, 1], default=5)
-
+    parser.add_argument('--log_every', type=int, default=100)
     args = parser.parse_args()
     return args
 

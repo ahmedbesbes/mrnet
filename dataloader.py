@@ -37,9 +37,9 @@ class MRDataset(data.Dataset):
         if weights is None:
             pos = np.sum(self.labels)
             neg = len(self.labels) - pos
-            self.weights = [1, neg / pos]
+            self.weights = torch.FloatTensor([1, neg / pos])
         else:
-            self.weights = weights
+            self.weights = torch.FloatTensor(weights)
 
     def __len__(self):
         return len(self.paths)
@@ -47,19 +47,23 @@ class MRDataset(data.Dataset):
     def __getitem__(self, index):
         array = np.load(self.paths[index])
         label = self.labels[index]
-        label = torch.FloatTensor([label])
+        if label == 1:
+            label = torch.FloatTensor([[0, 1]])
+        elif label == 0:
+            label = torch.FloatTensor([[1, 0]])
+
         if self.transform:
             array = self.transform(array)
         else:
             array = np.stack((array,)*3, axis=1)
             array = torch.FloatTensor(array)
 
-        if label.item() == 1:
-            weight = np.array([self.weights[1]])
-            weight = torch.FloatTensor(weight)
-        else:
-            weight = np.array([self.weights[0]])
-            weight = torch.FloatTensor(weight)
+        # if label.item() == 1:
+        #     weight = np.array([self.weights[1]])
+        #     weight = torch.FloatTensor(weight)
+        # else:
+        #     weight = np.array([self.weights[0]])
+        #     weight = torch.FloatTensor(weight)
 
-        return array, label, weight
+        return array, label, self.weights
 

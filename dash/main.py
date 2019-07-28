@@ -37,7 +37,7 @@ app = dash.Dash()
 # Boostrap CSS.
 
 app.css.append_css({'external_url': 'https://codepen.io/amyoshino/pen/jzXypZ.css'})  # noqa: E501
-# app.css.append_css({'external_url': "https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"})  # noqa: E501
+#app.css.append_css({'external_url': "https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"})  # noqa: E501
 
 
 
@@ -136,8 +136,6 @@ app.layout = html.Div(
                     )
                     ],
                     className="twelve columns"),
-
-
 
         ],
         className='row'
@@ -392,6 +390,7 @@ def set_summary(selected_case, selected_label, selected_pred):
     elif selected_pred == 'normal':
         summary = f'This patient, denoted by the MRI exam n°{selected_case}, is {status} diagnosed to be normal with an ACL tear probability of {proba}'
  
+
     return summary
 
 # set summary --- end
