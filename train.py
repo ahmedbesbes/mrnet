@@ -44,8 +44,6 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_e
 
         prediction = model.forward(image.float())
 
-        print(f'label: {label}')
-
         loss = torch.nn.BCEWithLogitsLoss(weight=weight)(prediction, label)
         loss.backward()
         optimizer.step()
@@ -106,24 +104,25 @@ def evaluate_model(model, val_loader, epoch, num_epochs, writer, log_every=20):
             label = label.cuda()
             weight = weight.cuda()
 
+        label = label[0]
+        weight = weight[0]
+
         prediction = model.forward(image.float())
 
-        y_pred = torch.sigmoid(prediction).item()
-        y_true = int(label.item())
+        loss = torch.nn.BCEWithLogitsLoss(weight=weight)(prediction, label)
 
-        y_preds.append(y_pred)
-        y_trues.append(y_true)
+        loss_value = loss.item()
+        losses.append(loss_value)
+
+        probas = torch.sigmoid(prediction)
+
+        y_trues.append(int(label[0][0]))
+        y_preds.append(probas[0][1].item())
 
         try:
             auc = metrics.roc_auc_score(y_trues, y_preds)
         except:
             auc = 0.5
-
-        loss = F.binary_cross_entropy_with_logits(
-            prediction[0], label[0], weight=weight[0])
-
-        loss_value = loss.item()
-        losses.append(loss_value)
 
         writer.add_scalar('Val/Loss', loss_value, epoch * len(val_loader) + i)
         writer.add_scalar('Val/AUC', auc, epoch * len(val_loader) + i)
