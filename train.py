@@ -53,7 +53,7 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_e
         
         probas = torch.sigmoid(prediction)
 
-        y_trues.append(int(label[0][0]))
+        y_trues.append(int(label[0][1]))
         y_preds.append(probas[0][1].item())
 
         try:
