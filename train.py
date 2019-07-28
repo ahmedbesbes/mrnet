@@ -203,7 +203,7 @@ def run(args):
         t_end = time.time()
         delta = t_end - t_start
 
-        print("train loss : {0} | train auc {1} | val loss {2} | val auc {3} | elapsed time {} s".format(
+        print("train loss : {0} | train auc {1} | val loss {2} | val auc {3} | elapsed time {4} s".format(
             train_loss, train_auc, val_loss, val_auc, delta))
 
         if args.lr_scheduler == 1:
