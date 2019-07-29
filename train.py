@@ -202,6 +202,7 @@ def run(args):
     t_start_training = time.time()
 
     for epoch in range(num_epochs):
+        current_lr = scheduler.get_lr()
 
         train_loss, train_auc = train_model(
             mrnet, train_loader, epoch, num_epochs, optimizer, writer, current_lr, log_every)
@@ -214,7 +215,6 @@ def run(args):
             scheduler.step()
 
         t_start = time.time()
-        current_lr = scheduler.get_lr()
 
         t_end = time.time()
         delta = t_end - t_start
