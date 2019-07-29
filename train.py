@@ -17,7 +17,6 @@ from tensorboardX import SummaryWriter
 
 from dataloader import MRDataset
 import model
-from utils import get_lr
 
 from sklearn import metrics
 
