@@ -144,6 +144,10 @@ def evaluate_model(model, val_loader, epoch, num_epochs, writer, current_lr, log
     val_auc_epoch = np.round(auc, 4)
     return val_loss_epoch, val_auc_epoch
 
+def get_lr(optimizer):
+    for param_group in optimizer.param_groups:
+        return param_group['lr']
+
 
 def run(args):
     log_root_folder = "./logs/{0}/{1}/".format(args.task, args.plane)
@@ -202,7 +206,7 @@ def run(args):
     t_start_training = time.time()
 
     for epoch in range(num_epochs):
-        current_lr = scheduler.get_lr()
+        current_lr = get_lr(optimizer)
 
         train_loss, train_auc = train_model(
             mrnet, train_loader, epoch, num_epochs, optimizer, writer, current_lr, log_every)
