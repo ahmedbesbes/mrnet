@@ -266,7 +266,7 @@ def parse_arguments():
     parser.add_argument('--lr', type=float, default=1e-5)
     parser.add_argument('--flush_history', type=int, choices=[0, 1], default=0)
     parser.add_argument('--save_model', type=int, choices=[0, 1], default=1)
-    parser.add_argument('--patience', type=int, choices=[0, 1], default=5)
+    parser.add_argument('--patience', type=int, default=5)
     parser.add_argument('--log_every', type=int, default=100)
     args = parser.parse_args()
     return args
