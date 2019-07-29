@@ -192,6 +192,8 @@ def run(args):
     patience = args.patience
     log_every = args.log_every
 
+    t_start_training = time.time()
+
     for epoch in range(num_epochs):
         t_start = time.time()
 
@@ -229,7 +231,9 @@ def run(args):
             print('Early stopping after {0} iterations without the decrease of the val loss'.
                   format(iteration_change_loss))
             break
-
+    
+    t_end_training = time.time()
+    print(f'training took {t_end_training - t_start_training} s')
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
