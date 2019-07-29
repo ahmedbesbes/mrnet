@@ -181,8 +181,12 @@ def run(args):
         mrnet = mrnet.cuda()
 
     optimizer = optim.Adam(mrnet.parameters(), lr=1e-5, weight_decay=0.1)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, patience=3, factor=.3, threshold=1e-4, verbose=True)
+
+    if args.lr_scheduler == "plateau":
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, patience=3, factor=.3, threshold=1e-4, verbose=True)
+    elif args.lr_scheduler == "step":
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=args.gamma)
 
     best_val_loss = float('inf')
     best_val_auc = float(0)
@@ -208,8 +212,10 @@ def run(args):
         print("train loss : {0} | train auc {1} | val loss {2} | val auc {3} | elapsed time {4} s".format(
             train_loss, train_auc, val_loss, val_auc, delta))
 
-        if args.lr_scheduler == 1:
+        if args.lr_scheduler == 'plateau':
             scheduler.step(val_loss)
+        elif args.lr_scheduler == 'step':
+            scheduler.step()
 
         iteration_change_loss += 1
         print('-' * 30)
@@ -243,7 +249,8 @@ def parse_arguments():
                         choices=['sagittal', 'coronal', 'axial'])
     parser.add_argument('--prefix_name', type=str, required=True)
     parser.add_argument('--augment', type=int, choices=[0, 1], default=1)
-    parser.add_argument('--lr_scheduler', type=int, choices=[0, 1], default=1)
+    parser.add_argument('--lr_scheduler', type=str, default='plateau', choices=['plateau', 'step'])
+    parser.add_argument('--gamma', type=float, default=0.5)
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--lr', type=float, default=1e-5)
     parser.add_argument('--flush_history', type=int, choices=[0, 1], default=0)
