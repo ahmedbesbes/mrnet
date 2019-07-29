@@ -203,6 +203,11 @@ def run(args):
 
     for epoch in range(num_epochs):
 
+        train_loss, train_auc = train_model(
+            mrnet, train_loader, epoch, num_epochs, optimizer, writer, current_lr, log_every)
+        val_loss, val_auc = evaluate_model(
+            mrnet, validation_loader, epoch, num_epochs, writer, current_lr)
+
         if args.lr_scheduler == 'plateau':
             scheduler.step(val_loss)
         elif args.lr_scheduler == 'step':
@@ -210,11 +215,6 @@ def run(args):
 
         t_start = time.time()
         current_lr = scheduler.get_lr()
-
-        train_loss, train_auc = train_model(
-            mrnet, train_loader, epoch, num_epochs, optimizer, writer, current_lr, log_every)
-        val_loss, val_auc = evaluate_model(
-            mrnet, validation_loader, epoch, num_epochs, writer, current_lr)
 
         t_end = time.time()
         delta = t_end - t_start
