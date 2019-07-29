@@ -17,11 +17,12 @@ from tensorboardX import SummaryWriter
 
 from dataloader import MRDataset
 import model
+from utils import get_lr
 
 from sklearn import metrics
 
 
-def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_every=100):
+def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, current_lr, log_every=100):
     _ = model.train()
 
     if torch.cuda.is_available():
@@ -66,14 +67,15 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_e
         writer.add_scalar('Train/AUC', auc, epoch * len(train_loader) + i)
 
         if (i % log_every == 0) & (i > 0):
-            print('''[Epoch: {0} / {1} |Single batch number : {2} / {3} ]| avg train loss {4} | train auc : {5}'''.
+            print('''[Epoch: {0} / {1} |Single batch number : {2} / {3} ]| avg train loss {4} | train auc : {5} | lr : {6}'''.
                   format(
                       epoch + 1,
                       num_epochs,
                       i,
                       len(train_loader),
                       np.round(np.mean(losses), 4),
-                      np.round(auc, 4)
+                      np.round(auc, 4),
+                      current_lr
                   )
                   )
 
@@ -84,7 +86,7 @@ def train_model(model, train_loader, epoch, num_epochs, optimizer, writer, log_e
     return train_loss_epoch, train_auc_epoch
 
 
-def evaluate_model(model, val_loader, epoch, num_epochs, writer, log_every=20):
+def evaluate_model(model, val_loader, epoch, num_epochs, writer, current_lr, log_every=20):
     _ = model.eval()
 
     if torch.cuda.is_available():
@@ -125,14 +127,15 @@ def evaluate_model(model, val_loader, epoch, num_epochs, writer, log_every=20):
         writer.add_scalar('Val/AUC', auc, epoch * len(val_loader) + i)
 
         if (i % log_every == 0) & (i > 0):
-            print('''[Epoch: {0} / {1} |Single batch number : {2} / {3} ] | avg val loss {4} | val auc : {5}'''.
+            print('''[Epoch: {0} / {1} |Single batch number : {2} / {3} ] | avg val loss {4} | val auc : {5} | lr : {6}'''.
                   format(
                       epoch + 1,
                       num_epochs,
                       i,
                       len(val_loader),
                       np.round(np.mean(losses), 4),
-                      np.round(auc, 4)
+                      np.round(auc, 4),
+                      current_lr
                   )
                   )
 
@@ -180,7 +183,7 @@ def run(args):
     if torch.cuda.is_available():
         mrnet = mrnet.cuda()
 
-    optimizer = optim.Adam(mrnet.parameters(), lr=1e-5, weight_decay=0.1)
+    optimizer = optim.Adam(mrnet.parameters(), lr=args.lr, weight_decay=0.1)
 
     if args.lr_scheduler == "plateau":
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
@@ -200,11 +203,13 @@ def run(args):
 
     for epoch in range(num_epochs):
         t_start = time.time()
+        current_lr = get_lr(optimizer)
 
         train_loss, train_auc = train_model(
-            mrnet, train_loader, epoch, num_epochs, optimizer, writer, log_every)
+            mrnet, train_loader, epoch, num_epochs, optimizer, writer, current_lr, log_every)
         val_loss, val_auc = evaluate_model(
-            mrnet, validation_loader, epoch, num_epochs, writer)
+            mrnet, validation_loader, epoch, num_epochs, writer, current_lr)
+
 
         t_end = time.time()
         delta = t_end - t_start
