@@ -208,6 +208,8 @@ def run(args):
     for epoch in range(num_epochs):
         current_lr = get_lr(optimizer)
 
+        t_start = time.time()
+        
         train_loss, train_auc = train_model(
             mrnet, train_loader, epoch, num_epochs, optimizer, writer, current_lr, log_every)
         val_loss, val_auc = evaluate_model(
@@ -217,8 +219,6 @@ def run(args):
             scheduler.step(val_loss)
         elif args.lr_scheduler == 'step':
             scheduler.step()
-
-        t_start = time.time()
 
         t_end = time.time()
         delta = t_end - t_start
