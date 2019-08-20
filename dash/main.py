@@ -32,7 +32,7 @@ predictions = pd.read_csv('./val_data.csv')
 # prepare the data -- end
 
 
-app = dash.Dash()
+app = dash.Dash(show_undo_redo=False)
 
 # Boostrap CSS.
 
