@@ -29,7 +29,7 @@ This charts summarizes the architecture of the project:
 
 <img src="./images/pipeline.png">
 
-For more details about the code, please refer to my blog post.
+For more details about the code, please refer to my second <a href="https://ahmedbesbes.com/automate-the-diagnosis-of-knee-injuries-with-deep-learning-part-2-building-an-acl-tear-classifier.html">blog post </a>.
 
 ## How to use the code:
 
