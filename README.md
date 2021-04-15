@@ -41,22 +41,26 @@ To run the script you can execute it with the following arguments:
 
 ```python
 parser = argparse.ArgumentParser()
-parser.add_argument('-t', '--task', type=str, required=True,
-                    choices=['abnormal', 'acl', 'meniscus'])
-parser.add_argument('-p', '--plane', type=str, required=True,
-                    choices=['sagittal', 'coronal', 'axial'])
-parser.add_argument('--augment', type=int, choices=[0, 1], default=1)
-parser.add_argument('--lr_scheduler', type=int, choices=[0, 1], default=1)
-parser.add_argument('--epochs', type=int, default=50)
-parser.add_argument('--lr', type=float, default=1e-5)
-parser.add_argument('--flush_history', type=int, choices=[0, 1], default=0)
-parser.add_argument('--save_model', type=int, choices=[0, 1], default=1)
-parser.add_argument('--patience', type=int, choices=[0, 1], default=5)
+    parser.add_argument('-t', '--task', type=str, required=True,
+                        choices=['abnormal', 'acl', 'meniscus'])
+    parser.add_argument('-p', '--plane', type=str, required=True,
+                        choices=['sagittal', 'coronal', 'axial'])
+    parser.add_argument('--prefix_name', type=str, required=True)
+    parser.add_argument('--augment', type=int, choices=[0, 1], default=1)
+    parser.add_argument('--lr_scheduler', type=str,
+                        default='plateau', choices=['plateau', 'step'])
+    parser.add_argument('--gamma', type=float, default=0.5)
+    parser.add_argument('--epochs', type=int, default=50)
+    parser.add_argument('--lr', type=float, default=1e-5)
+    parser.add_argument('--flush_history', type=int, choices=[0, 1], default=0)
+    parser.add_argument('--save_model', type=int, choices=[0, 1], default=1)
+    parser.add_argument('--patience', type=int, default=5)
+    parser.add_argument('--log_every', type=int, default=100)
 ```
 
 example to train a model to detect acl tears on the sagittal plane for a 20 epochs:
 
-`python -t acl -p sagittal --epochs=20`
+`python train.py -t acl -p sagittal --prefix_name demo --epochs=20`
 
 Note: Before running the script, add the following (empty) folders at the root of the project:
 - models
