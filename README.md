@@ -62,6 +62,7 @@ example to train a model to detect acl tears on the sagittal plane for a 20 epoc
 
 `python train.py -t acl -p sagittal --prefix_name demo --epochs=20`
 
+`--prefix_name` is a required parameter with an argument
 Note: Before running the script, add the following (empty) folders at the root of the project:
 - models
 - logs
